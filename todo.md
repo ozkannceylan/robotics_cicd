@@ -8,7 +8,7 @@ Work top to bottom. Each checkbox = one PR where feasible. Phases mirror `projec
 - [x] Add `CODEOWNERS` (own the critical paths: `/otonav_mujoco_bridge/`, `/.github/`)
 - [x] Add issue templates (bug, task)
 - [x] Enable branch protection on `main`: require PR, require status checks, no force-push
-- [x] Enable native Merge Queue on `main`
+- [~] Enable native Merge Queue on `main` — **blocked**: GitHub native merge queue is unavailable for private repos on a personal account (needs Team/Enterprise, or make the repo public). Fallback in place: branch protection ruleset requires PRs + the `lint-build-test` status check and blocks direct/force pushes, giving the same gate minus the auto re-test against latest `main`. Re-enable when the repo goes public or moves to an org.
 - [x] Add `pre-commit` config: clang-format, trailing-whitespace, yaml check; document install in README
 - [x] Add stub CI workflow (checkout + echo) so the required check exists from day one
 - [x] Verify: open a trivial PR → template appears → stub check runs → merges via queue
