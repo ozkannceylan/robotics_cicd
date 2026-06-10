@@ -105,3 +105,11 @@ jobs:
           name: junit-test-results
           path: build/*/test_results/**/*.xml
           if-no-files-found: warn
+
+      - name: Upload failure rosbag (SIL scenario)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: goal-reach-failure-bag
+          path: /tmp/otonav_goal_reach_bag
+          if-no-files-found: warn

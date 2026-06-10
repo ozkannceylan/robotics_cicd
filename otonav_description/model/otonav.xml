@@ -31,8 +31,13 @@
       <inertial pos="0 0 0.02" mass="3.0" diaginertia="0.02 0.03 0.04"/>
       <geom name="chassis" type="box" size="0.15 0.10 0.04" pos="0 0 0.04" rgba="0.1 0.4 0.8 1"/>
 
-      <!-- frictionless caster: rigid sphere support at the rear -->
-      <geom name="caster" type="sphere" size="0.025" pos="-0.12 0 -0.025"
+      <!-- Frictionless caster supports at front AND rear. Two casters give a
+           4-point stance so the chassis does not pitch nose-down under
+           acceleration — otherwise the front lidar beams tip into the floor
+           and false-trigger stop-on-obstacle. -->
+      <geom name="caster_rear" type="sphere" size="0.025" pos="-0.12 0 -0.025"
+            friction="0.0001 0.0001 0.0001" condim="1" rgba="0.3 0.3 0.3 1"/>
+      <geom name="caster_front" type="sphere" size="0.025" pos="0.12 0 -0.025"
             friction="0.0001 0.0001 0.0001" condim="1" rgba="0.3 0.3 0.3 1"/>
 
       <!-- IMU mounting point -->
@@ -65,8 +70,8 @@
   </worldbody>
 
   <actuator>
-    <velocity name="left_wheel_act"  joint="left_wheel"  kv="0.5" ctrlrange="-30 30"/>
-    <velocity name="right_wheel_act" joint="right_wheel" kv="0.5" ctrlrange="-30 30"/>
+    <velocity name="left_wheel_act"  joint="left_wheel"  kv="5.0" ctrlrange="-30 30"/>
+    <velocity name="right_wheel_act" joint="right_wheel" kv="5.0" ctrlrange="-30 30"/>
   </actuator>
 
   <sensor>

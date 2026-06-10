@@ -1,0 +1,18 @@
+<!--
+  Goal-reach SIL scene (Phase 3): the robot from otonav.xml plus one static
+  obstacle offset from the straight path to the goal at (3, 0). The go-to-goal
+  controller drives roughly straight, so it clears the obstacle (>= 0.3 m) while
+  reaching the goal — no avoidance needed. The lidar still sees the obstacle,
+  exercising stop-on-obstacle telemetry. Physics correctness only.
+-->
+<mujoco model="otonav_scene_goal">
+  <include file="otonav.xml"/>
+
+  <worldbody>
+    <!-- Obstacle: 0.5 m off the centerline, ~1.5 m ahead. Closest approach to
+         the straight path is ~0.5 m, comfortably above the 0.3 m clearance bar. -->
+    <body name="obstacle" pos="1.5 0.5 0.15">
+      <geom name="obstacle_geom" type="box" size="0.15 0.15 0.15" rgba="0.8 0.2 0.2 1"/>
+    </body>
+  </worldbody>
+</mujoco>

@@ -16,6 +16,13 @@ if(BUILD_TESTING)
     test/test_odom_smoke.py
     TIMEOUT 120
     ENV ROS_LOCALHOST_ONLY=1)
+
+  # Goal-reach scenario (Phase 3): sim + nav, assert goal reached on sim time and
+  # obstacle clearance held. Records a rosbag CI uploads on failure.
+  add_launch_test(
+    test/test_goal_reach.py
+    TIMEOUT 180
+    ENV ROS_LOCALHOST_ONLY=1)
 endif()
 
 ament_package()

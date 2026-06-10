@@ -11,6 +11,7 @@
 
   <exec_depend>otonav_mujoco_bridge</exec_depend>
   <exec_depend>otonav_description</exec_depend>
+  <exec_depend>otonav_nav</exec_depend>
   <exec_depend>launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>
 
@@ -23,6 +24,10 @@
   <test_depend>nav_msgs</test_depend>
   <test_depend>sensor_msgs</test_depend>
   <test_depend>rosgraph_msgs</test_depend>
+  <test_depend>otonav_nav</test_depend>
+  <test_depend>otonav_description</test_depend>
+  <test_depend>ros2bag</test_depend>
+  <test_depend>rosbag2_storage_default_plugins</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

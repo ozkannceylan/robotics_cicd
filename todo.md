@@ -37,12 +37,12 @@ Work top to bottom. Each checkbox = one PR where feasible. Phases mirror `projec
 - [x] Verify: PR with a deliberately failing unit test is blocked; revert; green PR lands
 
 ## Phase 3 — SIL Integration Test
-- [ ] `otonav_nav`: go-to-goal P-controller node (param-driven gains, goal via topic)
-- [ ] Add lidar stop-on-obstacle guard (min-range threshold → zero cmd_vel)
-- [ ] Unit tests for controller math (no sim needed)
-- [ ] `launch_testing` scenario `test_goal_reach.py`: headless sim + nav, assert goal reached < 20 s sim time, obstacle clearance ≥ 0.3 m, conditional waits only
-- [ ] rosbag record of scenario topics; upload as CI artifact on failure
-- [ ] Verify artifact path: break controller gain in a branch, download the failure bag from the run, revert
+- [x] `otonav_nav`: go-to-goal P-controller node (param-driven gains, goal via `/goal_pose` or `goal_x/goal_y` params); pure law in `go_to_goal.hpp`
+- [x] Add lidar stop-on-obstacle guard (front-sector min-range → zero cmd_vel); pure law in `obstacle_guard.hpp`
+- [x] Unit tests for controller math (no sim needed): `test_go_to_goal.cpp`, `test_obstacle_guard.cpp`
+- [x] `launch_testing` scenario `test_goal_reach.py`: headless sim + nav, goal reached < 20 s sim time, obstacle clearance ≥ 0.3 m, conditional waits only. (Added a front caster + stiffer wheel servo so the chassis stays level — a nose-down pitch was tipping the front lidar into the floor and false-triggering stop-on-obstacle.)
+- [x] rosbag record of scenario topics; upload as CI artifact on failure (`if: failure()` in ci.yml)
+- [x] Verify artifact path: break controller gain in a branch, download the failure bag from the run, revert
 
 ## Phase 4 — Release Engineering
 - [ ] CHANGELOG.md (keep-a-changelog format), v0.1.0 entry
