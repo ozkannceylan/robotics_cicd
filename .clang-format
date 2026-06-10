@@ -1,0 +1,10 @@
+# Version-pinned to clang-format 18 (matches .pre-commit-config.yaml and CI).
+# Based on Google style with ROS-friendly 100-column lines.
+---
+Language: Cpp
+BasedOnStyle: Google
+ColumnLimit: 100
+DerivePointerAlignment: false
+PointerAlignment: Middle
+IncludeBlocks: Preserve
+SortIncludes: true

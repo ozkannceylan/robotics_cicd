@@ -1,0 +1,12 @@
+# Code ownership — every PR auto-requests review from these owners.
+# Single maintainer for now; critical paths called out explicitly so the
+# ownership map stays meaningful as contributors are added.
+
+# Default owner for everything
+*                           @ozkannceylan
+
+# Critical integration surfaces — the sim-to-real boundary and the pipeline
+/otonav_mujoco_bridge/      @ozkannceylan
+/.github/                   @ozkannceylan
+/docker/                    @ozkannceylan
+/config/                    @ozkannceylan

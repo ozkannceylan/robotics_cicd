@@ -1,0 +1,32 @@
+name: CI
+
+# Runs on PRs and on merge-queue batches so the same required check gates both
+# the PR and the queue's re-test against the latest main (ADR-6). Phase 2 replaces
+# the stub steps with: pre-commit -> colcon build (ccache) -> gtest -> headless SIL.
+on:
+  pull_request:
+    branches: [main]
+  merge_group:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: lint-build-test
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Stub gate (replaced in Phase 2)
+        run: |
+          echo "OtoNav-CI stub check — required status check is live."
+          echo "Phase 2 wires: pre-commit -> colcon build -> colcon test -> headless SIL."
+          echo "ref=${GITHUB_REF} event=${GITHUB_EVENT_NAME} sha=${GITHUB_SHA}"

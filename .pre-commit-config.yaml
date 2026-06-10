@@ -1,0 +1,26 @@
+# Local-quality gate, mirrored by CI (Phase 2). Install once:
+#   pipx install pre-commit   # or: pip install --user pre-commit
+#   pre-commit install        # enable the git hook
+#   pre-commit run --all-files
+#
+# clang-format version is pinned here and MUST match the version CI runs,
+# per Hard Rule #6 (single source of truth for versions).
+minimum_pre_commit_version: "3.5.0"
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-merge-conflict
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: check-added-large-files
+        args: [--maxkb=1024]  # Hard Rule #5: no binaries/large files in git
+
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v18.1.8
+    hooks:
+      - id: clang-format
+        types_or: [c++, c]

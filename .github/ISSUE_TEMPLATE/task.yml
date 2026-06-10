@@ -1,0 +1,32 @@
+name: Task
+description: A unit of planned work (maps to a todo.md checkbox / phase item)
+title: "<type>: <short summary>"
+labels: ["task"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What "done" looks like for this task.
+    validations:
+      required: true
+  - type: input
+    id: phase
+    attributes:
+      label: Phase / todo item
+      description: Which project_plan.md phase and todo.md line this advances.
+      placeholder: "Phase 1 — otonav_mujoco_bridge skeleton"
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Checklist that must be green before the PR merges.
+      value: |
+        - [ ] Code + test on a feature branch
+        - [ ] pre-commit clean, colcon build + test pass
+        - [ ] PR via template, lands through merge queue
+        - [ ] todo.md checkbox ticked in the same PR
+    validations:
+      required: true

@@ -1,0 +1,37 @@
+name: Bug report
+description: Something behaves incorrectly (build, sim, CI, or test)
+title: "fix: <short summary>"
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: Actual behaviour, with the exact error / failing check.
+      placeholder: Paste logs, JUnit output, or the failing CI step here.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: Exact commands. Prefer the CI-parity invocation.
+      placeholder: |
+        source /opt/ros/humble/setup.bash
+        colcon build ...
+        ros2 launch otonav_bringup sim.launch.py gui:=false
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      placeholder: "ROS 2 Humble / MuJoCo 3.3.x / Ubuntu 22.04 / commit sha"
+    validations:
+      required: true
