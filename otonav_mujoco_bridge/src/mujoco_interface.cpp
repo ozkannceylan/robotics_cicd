@@ -8,13 +8,10 @@
 #include <stdexcept>
 #include <utility>
 
-namespace otonav_mujoco_bridge
-{
+namespace otonav_mujoco_bridge {
 
-namespace
-{
-int require_actuator(const mjModel * m, const char * name)
-{
+namespace {
+int require_actuator(const mjModel * m, const char * name) {
   const int id = mj_name2id(m, mjOBJ_ACTUATOR, name);
   if (id < 0) {
     throw std::runtime_error(std::string("MJCF missing actuator: ") + name);
@@ -22,8 +19,7 @@ int require_actuator(const mjModel * m, const char * name)
   return id;
 }
 
-int require_sensor(const mjModel * m, const char * name)
-{
+int require_sensor(const mjModel * m, const char * name) {
   const int id = mj_name2id(m, mjOBJ_SENSOR, name);
   if (id < 0) {
     throw std::runtime_error(std::string("MJCF missing sensor: ") + name);
@@ -33,12 +29,9 @@ int require_sensor(const mjModel * m, const char * name)
 }  // namespace
 
 MujocoInterface::MujocoInterface(std::string model_path, int lidar_beams, double range_max)
-: model_path_(std::move(model_path)), lidar_beams_(lidar_beams), range_max_(range_max)
-{
-}
+    : model_path_(std::move(model_path)), lidar_beams_(lidar_beams), range_max_(range_max) {}
 
-MujocoInterface::~MujocoInterface()
-{
+MujocoInterface::~MujocoInterface() {
   if (data_ != nullptr) {
     mj_deleteData(data_);
   }
@@ -47,8 +40,7 @@ MujocoInterface::~MujocoInterface()
   }
 }
 
-void MujocoInterface::init()
-{
+void MujocoInterface::init() {
   char error[1024] = "";
   model_ = mj_loadXML(model_path_.c_str(), nullptr, error, sizeof(error));
   if (model_ == nullptr) {
@@ -83,39 +75,24 @@ void MujocoInterface::init()
   mj_forward(model_, data_);  // populate sensordata before the first read
 }
 
-const double * MujocoInterface::sensor_ptr(int sensor_id) const
-{
+const double * MujocoInterface::sensor_ptr(int sensor_id) const {
   return data_->sensordata + model_->sensor_adr[sensor_id];
 }
 
-double MujocoInterface::sensor_value(int sensor_id) const
-{
-  return sensor_ptr(sensor_id)[0];
-}
+double MujocoInterface::sensor_value(int sensor_id) const { return sensor_ptr(sensor_id)[0]; }
 
-void MujocoInterface::write(const WheelCommand & cmd)
-{
+void MujocoInterface::write(const WheelCommand & cmd) {
   data_->ctrl[act_left_] = cmd.left_rad_s;
   data_->ctrl[act_right_] = cmd.right_rad_s;
 }
 
-void MujocoInterface::step()
-{
-  mj_step(model_, data_);
-}
+void MujocoInterface::step() { mj_step(model_, data_); }
 
-double MujocoInterface::sim_time() const
-{
-  return data_->time;
-}
+double MujocoInterface::sim_time() const { return data_->time; }
 
-double MujocoInterface::timestep() const
-{
-  return model_->opt.timestep;
-}
+double MujocoInterface::timestep() const { return model_->opt.timestep; }
 
-WheelState MujocoInterface::read_wheels() const
-{
+WheelState MujocoInterface::read_wheels() const {
   WheelState w;
   w.left_pos = sensor_value(s_left_pos_);
   w.left_vel = sensor_value(s_left_vel_);
@@ -124,8 +101,7 @@ WheelState MujocoInterface::read_wheels() const
   return w;
 }
 
-ImuSample MujocoInterface::read_imu() const
-{
+ImuSample MujocoInterface::read_imu() const {
   ImuSample imu;
   const double * q = sensor_ptr(s_quat_);
   const double * g = sensor_ptr(s_gyro_);
@@ -136,8 +112,7 @@ ImuSample MujocoInterface::read_imu() const
   return imu;
 }
 
-RangeScan MujocoInterface::read_scan() const
-{
+RangeScan MujocoInterface::read_scan() const {
   RangeScan scan;
   scan.angle_min = angle_min_;
   scan.angle_max = angle_max_;
@@ -148,8 +123,8 @@ RangeScan MujocoInterface::read_scan() const
   for (const int id : s_lidar_) {
     const double r = sensor_value(id);
     // MuJoCo rangefinder returns -1 when no geom is hit within range.
-    scan.ranges.push_back(
-      (r < 0.0 || r > range_max_) ? static_cast<float>(range_max_) : static_cast<float>(r));
+    scan.ranges.push_back((r < 0.0 || r > range_max_) ? static_cast<float>(range_max_)
+                                                      : static_cast<float>(r));
   }
   return scan;
 }

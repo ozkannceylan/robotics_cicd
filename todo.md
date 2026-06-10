@@ -26,15 +26,15 @@ Work top to bottom. Each checkbox = one PR where feasible. Phases mirror `projec
 - Note: Phase 1 is built & validated inside the `docker/` Humble+MuJoCo image (host runs ROS 2 Jazzy, not Humble). This pulls the Phase 2 Dockerfile forward as the build harness; CI wiring (ccache, SIL, lint-all) remains Phase 2.
 
 ## Phase 2 — CI Pipeline
-- [ ] `docker/Dockerfile`: builder stage (toolchain + MuJoCo SDK + colcon build) → runner stage (ros-core + runtime libs + install tree)
-- [ ] `docker/entrypoint.sh`: source ROS + workspace, `exec "$@"`; wire as ENTRYPOINT
-- [ ] CI job: pre-commit/lint stage
-- [ ] CI job: colcon build with ccache + `actions/cache` keyed on lockable inputs
-- [ ] CI job: unit tests (gtest) for `otonav_control` kinematics (forward/inverse round-trip, odom integration) with JUnit XML upload
-- [ ] CI job: headless SIL smoke test (launch sim `gui:=false`, assert `/odom` publishing within sim-time budget), `ROS_LOCALHOST_ONLY=1`
-- [ ] Wire all jobs as required checks for merge queue
-- [ ] Keep `config/fastdds_ci_profile.xml` (UDPv4 unicast initialPeers fallback) with README note explaining when to use it
-- [ ] Verify: PR with a deliberately failing unit test is blocked; revert; green PR lands via queue
+- [x] `docker/Dockerfile`: builder stage (toolchain + MuJoCo SDK + colcon build) → runner stage (ros-core + runtime libs + install tree) — landed in Phase 1 as the build harness
+- [x] `docker/entrypoint.sh`: source ROS + workspace, `exec "$@"`; wire as ENTRYPOINT — landed in Phase 1
+- [x] CI job: pre-commit/lint stage (`pre-commit/action`, advisory)
+- [x] CI job: colcon build with ccache + `actions/cache` (MuJoCo SDK + ccache cached) inside `container: ros:humble-ros-base`
+- [x] CI job: unit tests (gtest) for `otonav_control` kinematics with JUnit XML upload (`colcon test` + upload-artifact)
+- [x] CI job: headless SIL smoke test — `add_launch_test(test_odom_smoke.py)` asserts `/clock /odom /imu /scan` publish, `ROS_LOCALHOST_ONLY=1` (runs inside `colcon test`)
+- [~] Wire all jobs as required checks — `lint-build-test` is the required check (in the ruleset). `pre-commit` is advisory; add it via the UI when desired.
+- [x] Keep `config/fastdds_ci_profile.xml` (UDPv4 unicast initialPeers fallback) with README note explaining when to use it
+- [x] Verify: PR with a deliberately failing unit test is blocked; revert; green PR lands
 
 ## Phase 3 — SIL Integration Test
 - [ ] `otonav_nav`: go-to-goal P-controller node (param-driven gains, goal via topic)

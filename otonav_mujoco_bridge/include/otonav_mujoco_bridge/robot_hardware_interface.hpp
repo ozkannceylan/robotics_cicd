@@ -9,19 +9,16 @@
 #include <array>
 #include <vector>
 
-namespace otonav_mujoco_bridge
-{
+namespace otonav_mujoco_bridge {
 
 /// Commanded wheel angular velocities [rad/s].
-struct WheelCommand
-{
+struct WheelCommand {
   double left_rad_s{0.0};
   double right_rad_s{0.0};
 };
 
 /// Measured wheel state: angle [rad] and angular velocity [rad/s].
-struct WheelState
-{
+struct WheelState {
   double left_pos{0.0};
   double left_vel{0.0};
   double right_pos{0.0};
@@ -29,16 +26,14 @@ struct WheelState
 };
 
 /// IMU feedback. Orientation quaternion is (w, x, y, z).
-struct ImuSample
-{
+struct ImuSample {
   std::array<double, 4> orientation{{1.0, 0.0, 0.0, 0.0}};
   std::array<double, 3> angular_velocity{{0.0, 0.0, 0.0}};
   std::array<double, 3> linear_acceleration{{0.0, 0.0, 0.0}};
 };
 
 /// Planar range scan, ROS LaserScan conventions ([range_min, range_max], CCW).
-struct RangeScan
-{
+struct RangeScan {
   std::vector<float> ranges;
   double angle_min{0.0};
   double angle_max{0.0};
@@ -50,9 +45,8 @@ struct RangeScan
 /// Abstract hardware backend. write() actuates; read_*() return feedback;
 /// step() advances the hardware/sim by one timestep() and sim_time() is the
 /// authoritative clock the bridge publishes on /clock (ADR-2).
-class RobotHardwareInterface
-{
-public:
+class RobotHardwareInterface {
+ public:
   virtual ~RobotHardwareInterface() = default;
 
   virtual void init() = 0;

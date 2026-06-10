@@ -47,6 +47,18 @@ ros2 launch otonav_bringup sim.launch.py gui:=false
 ros2 launch otonav_bringup sim.launch.py gui:=true
 ```
 
+## CI / DDS in CI
+
+CI builds and tests inside ROS 2 Humble + MuJoCo (MuJoCo cached, C++ via ccache),
+runs `colcon test` (ament lint + gtest + a headless SIL launch test), and uploads
+JUnit reports. DDS uses `ROS_LOCALHOST_ONLY=1` with `rmw_fastrtps_cpp` (ADR-3).
+If loopback discovery ever fails on a runner, fall back to the documented profile:
+
+```bash
+export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+export FASTRTPS_DEFAULT_PROFILES_FILE=$PWD/config/fastdds_ci_profile.xml
+```
+
 ## License
 
 See [`LICENSE`](LICENSE).

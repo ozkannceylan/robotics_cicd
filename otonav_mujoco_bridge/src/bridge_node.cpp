@@ -27,54 +27,48 @@
 #include "otonav_mujoco_bridge/robot_hardware_interface.hpp"
 #include "otonav_mujoco_bridge/topic_names.hpp"
 
-namespace otonav_mujoco_bridge
-{
+namespace otonav_mujoco_bridge {
 
-namespace
-{
-rcl_interfaces::msg::ParameterDescriptor describe(const std::string & text)
-{
+namespace {
+rcl_interfaces::msg::ParameterDescriptor describe(const std::string & text) {
   rcl_interfaces::msg::ParameterDescriptor d;
   d.description = text;
   return d;
 }
 
-std::string default_model_path()
-{
-  return ament_index_cpp::get_package_share_directory("otonav_description") +
-         "/model/otonav.xml";
+std::string default_model_path() {
+  return ament_index_cpp::get_package_share_directory("otonav_description") + "/model/otonav.xml";
 }
 }  // namespace
 
-class OtoNavBridge : public rclcpp::Node
-{
-public:
-  OtoNavBridge()
-  : rclcpp::Node("otonav_bridge")
-  {
-    backend_ = declare_parameter<std::string>(
-      "backend", "mujoco", describe("Hardware backend: 'mujoco' or 'canbus'."));
+class OtoNavBridge : public rclcpp::Node {
+ public:
+  OtoNavBridge() : rclcpp::Node("otonav_bridge") {
+    backend_ = declare_parameter<std::string>("backend", "mujoco",
+                                              describe("Hardware backend: 'mujoco' or 'canbus'."));
     const std::string model_path = declare_parameter<std::string>(
-      "model_path", default_model_path(), describe("Absolute path to the MJCF model."));
-    wheel_radius_ = declare_parameter<double>(
-      "wheel_radius", 0.05, describe("Wheel radius [m]; must match the MJCF."));
+        "model_path", default_model_path(), describe("Absolute path to the MJCF model."));
+    wheel_radius_ = declare_parameter<double>("wheel_radius", 0.05,
+                                              describe("Wheel radius [m]; must match the MJCF."));
     track_width_ = declare_parameter<double>(
-      "track_width", 0.30, describe("Wheel separation [m]; must match the MJCF."));
-    publish_rate_ = declare_parameter<double>(
-      "publish_rate", 100.0, describe("Sensor/clock publish rate [Hz]."));
+        "track_width", 0.30, describe("Wheel separation [m]; must match the MJCF."));
+    publish_rate_ = declare_parameter<double>("publish_rate", 100.0,
+                                              describe("Sensor/clock publish rate [Hz]."));
     const int lidar_beams = declare_parameter<int>(
-      "lidar_beams", 13, describe("Number of lidar rangefinder beams in the MJCF."));
+        "lidar_beams", 13, describe("Number of lidar rangefinder beams in the MJCF."));
     odom_frame_ = declare_parameter<std::string>("odom_frame", "odom", describe("Odometry frame."));
-    base_frame_ = declare_parameter<std::string>("base_frame", "base_link", describe("Base frame."));
+    base_frame_ =
+        declare_parameter<std::string>("base_frame", "base_link", describe("Base frame."));
     imu_frame_ = declare_parameter<std::string>("imu_frame", "imu_link", describe("IMU frame."));
-    laser_frame_ = declare_parameter<std::string>("laser_frame", "laser_link", describe("Lidar frame."));
+    laser_frame_ =
+        declare_parameter<std::string>("laser_frame", "laser_link", describe("Lidar frame."));
     const bool enable_viewer = declare_parameter<bool>(
-      "enable_viewer", false, describe("Open the MuJoCo viewer (local dev only; headless build is a no-op)."));
+        "enable_viewer", false,
+        describe("Open the MuJoCo viewer (local dev only; headless build is a no-op)."));
     if (enable_viewer) {
-      RCLCPP_WARN(
-        get_logger(),
-        "enable_viewer=true but this build is headless (ADR-1): physics runs, no window. "
-        "Rendering is opt-in and never a precondition (Hard Rule #7).");
+      RCLCPP_WARN(get_logger(),
+                  "enable_viewer=true but this build is headless (ADR-1): physics runs, no window. "
+                  "Rendering is opt-in and never a precondition (Hard Rule #7).");
     }
 
     hw_ = make_hardware(backend_, model_path, lidar_beams);
@@ -82,31 +76,30 @@ public:
 
     const double dt = hw_->timestep();
     steps_per_publish_ = std::max(1, static_cast<int>(std::lround((1.0 / publish_rate_) / dt)));
-    RCLCPP_INFO(
-      get_logger(), "backend=%s model_dt=%.4fs publish_rate=%.1fHz steps/publish=%d",
-      backend_.c_str(), dt, publish_rate_, steps_per_publish_);
+    RCLCPP_INFO(get_logger(), "backend=%s model_dt=%.4fs publish_rate=%.1fHz steps/publish=%d",
+                backend_.c_str(), dt, publish_rate_, steps_per_publish_);
 
     clock_pub_ = create_publisher<rosgraph_msgs::msg::Clock>(topics::kClock, rclcpp::QoS(10));
     odom_pub_ = create_publisher<nav_msgs::msg::Odometry>(topics::kOdom, rclcpp::QoS(10));
     imu_pub_ = create_publisher<sensor_msgs::msg::Imu>(topics::kImu, rclcpp::SensorDataQoS());
-    scan_pub_ = create_publisher<sensor_msgs::msg::LaserScan>(topics::kScan, rclcpp::SensorDataQoS());
+    scan_pub_ =
+        create_publisher<sensor_msgs::msg::LaserScan>(topics::kScan, rclcpp::SensorDataQoS());
 
     cmd_vel_sub_ = create_subscription<geometry_msgs::msg::Twist>(
-      topics::kCmdVel, rclcpp::QoS(10),
-      [this](geometry_msgs::msg::Twist::SharedPtr msg) {
-        cmd_v_ = msg->linear.x;
-        cmd_w_ = msg->angular.z;
-      });
+        topics::kCmdVel, rclcpp::QoS(10), [this](geometry_msgs::msg::Twist::SharedPtr msg) {
+          cmd_v_ = msg->linear.x;
+          cmd_w_ = msg->angular.z;
+        });
 
     last_sim_time_ = hw_->sim_time();
-    timer_ = create_wall_timer(
-      std::chrono::duration<double>(1.0 / publish_rate_), [this]() { tick(); });
+    timer_ =
+        create_wall_timer(std::chrono::duration<double>(1.0 / publish_rate_), [this]() { tick(); });
   }
 
-private:
-  static std::unique_ptr<RobotHardwareInterface> make_hardware(
-    const std::string & backend, const std::string & model_path, int lidar_beams)
-  {
+ private:
+  static std::unique_ptr<RobotHardwareInterface> make_hardware(const std::string & backend,
+                                                               const std::string & model_path,
+                                                               int lidar_beams) {
     if (backend == "mujoco") {
       return std::make_unique<MujocoInterface>(model_path, lidar_beams);
     }
@@ -116,16 +109,14 @@ private:
     throw std::runtime_error("Unknown backend '" + backend + "' (use 'mujoco' or 'canbus').");
   }
 
-  rclcpp::Time sim_stamp() const
-  {
+  rclcpp::Time sim_stamp() const {
     return rclcpp::Time(static_cast<int64_t>(std::llround(hw_->sim_time() * 1e9)), RCL_ROS_TIME);
   }
 
-  void tick()
-  {
+  void tick() {
     // Actuate from the latest command, then advance the sim one publish period.
-    const otonav_control::WheelSpeeds w = otonav_control::inverse_kinematics(
-      {cmd_v_, cmd_w_}, wheel_radius_, track_width_);
+    const otonav_control::WheelSpeeds w =
+        otonav_control::inverse_kinematics({cmd_v_, cmd_w_}, wheel_radius_, track_width_);
     hw_->write(WheelCommand{w.left, w.right});
     for (int i = 0; i < steps_per_publish_; ++i) {
       hw_->step();
@@ -138,18 +129,16 @@ private:
     publish_scan(stamp);
   }
 
-  void publish_clock(const rclcpp::Time & stamp)
-  {
+  void publish_clock(const rclcpp::Time & stamp) {
     rosgraph_msgs::msg::Clock msg;
     msg.clock = stamp;
     clock_pub_->publish(msg);
   }
 
-  void publish_odom(const rclcpp::Time & stamp)
-  {
+  void publish_odom(const rclcpp::Time & stamp) {
     const WheelState ws = hw_->read_wheels();
     const otonav_control::BodyTwist t = otonav_control::forward_kinematics(
-      {ws.left_vel, ws.right_vel}, wheel_radius_, track_width_);
+        {ws.left_vel, ws.right_vel}, wheel_radius_, track_width_);
 
     const double now = hw_->sim_time();
     const double dt = std::max(0.0, now - last_sim_time_);
@@ -173,8 +162,7 @@ private:
     odom_pub_->publish(msg);
   }
 
-  void publish_imu(const rclcpp::Time & stamp)
-  {
+  void publish_imu(const rclcpp::Time & stamp) {
     const ImuSample s = hw_->read_imu();
     sensor_msgs::msg::Imu msg;
     msg.header.stamp = stamp;
@@ -192,8 +180,7 @@ private:
     imu_pub_->publish(msg);
   }
 
-  void publish_scan(const rclcpp::Time & stamp)
-  {
+  void publish_scan(const rclcpp::Time & stamp) {
     const RangeScan s = hw_->read_scan();
     sensor_msgs::msg::LaserScan msg;
     msg.header.stamp = stamp;
@@ -233,8 +220,7 @@ private:
 
 }  // namespace otonav_mujoco_bridge
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char ** argv) {
   rclcpp::init(argc, argv);
   rclcpp::spin(std::make_shared<otonav_mujoco_bridge::OtoNavBridge>());
   rclcpp::shutdown();

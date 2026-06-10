@@ -7,14 +7,12 @@
 
 #include "otonav_mujoco_bridge/robot_hardware_interface.hpp"
 
-namespace otonav_mujoco_bridge
-{
+namespace otonav_mujoco_bridge {
 
 /// Placeholder CAN-bus backend for a physical diff-drive base. Every method
 /// throws std::logic_error — the point is the type signature, not a driver.
-class CanBusInterface : public RobotHardwareInterface
-{
-public:
+class CanBusInterface : public RobotHardwareInterface {
+ public:
   CanBusInterface() = default;
 
   void init() override;

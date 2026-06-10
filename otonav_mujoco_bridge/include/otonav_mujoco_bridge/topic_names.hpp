@@ -4,8 +4,7 @@
 #ifndef OTONAV_MUJOCO_BRIDGE__TOPIC_NAMES_HPP_
 #define OTONAV_MUJOCO_BRIDGE__TOPIC_NAMES_HPP_
 
-namespace otonav_mujoco_bridge::topics
-{
+namespace otonav_mujoco_bridge::topics {
 inline constexpr const char * kCmdVel = "cmd_vel";
 inline constexpr const char * kClock = "/clock";
 inline constexpr const char * kOdom = "odom";

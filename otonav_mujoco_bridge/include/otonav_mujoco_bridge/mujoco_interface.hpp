@@ -13,15 +13,14 @@
 
 struct mjModel_;
 struct mjData_;
-typedef struct mjModel_ mjModel;  // NOLINT(modernize-use-using) — C SDK typedef
-typedef struct mjData_ mjData;    // NOLINT(modernize-use-using)
+// Match the MuJoCo C SDK's own typedefs (mujoco.h re-declares these identically).
+typedef struct mjModel_ mjModel;
+typedef struct mjData_ mjData;
 
-namespace otonav_mujoco_bridge
-{
+namespace otonav_mujoco_bridge {
 
-class MujocoInterface : public RobotHardwareInterface
-{
-public:
+class MujocoInterface : public RobotHardwareInterface {
+ public:
   explicit MujocoInterface(std::string model_path, int lidar_beams = 13, double range_max = 10.0);
   ~MujocoInterface() override;
 
@@ -39,7 +38,7 @@ public:
   ImuSample read_imu() const override;
   RangeScan read_scan() const override;
 
-private:
+ private:
   double sensor_value(int sensor_id) const;  // first scalar of a sensor
   const double * sensor_ptr(int sensor_id) const;
 

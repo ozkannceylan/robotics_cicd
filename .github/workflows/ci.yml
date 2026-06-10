@@ -1,8 +1,7 @@
 name: CI
 
-# Runs on PRs and on merge-queue batches so the same required check gates both
-# the PR and the queue's re-test against the latest main (ADR-6). Phase 2 replaces
-# the stub steps with: pre-commit -> colcon build (ccache) -> gtest -> headless SIL.
+# Gates PRs and merge-queue batches (ADR-6). The required check is the
+# `lint-build-test` job; `pre-commit` is advisory until added to the ruleset.
 on:
   pull_request:
     branches: [main]
@@ -17,16 +16,92 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  ci:
+  pre-commit:
+    name: pre-commit
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - uses: pre-commit/action@v3.0.1
+
+  lint-build-test:
     name: lint-build-test
     runs-on: ubuntu-22.04
+    container: ros:humble-ros-base
     timeout-minutes: 10
+    env:
+      MUJOCO_VERSION: "3.3.7"
+      MUJOCO_DIR: /opt/mujoco-3.3.7
+      CCACHE_DIR: ${{ github.workspace }}/.ccache
+      ROS_LOCALHOST_ONLY: "1"
+      RMW_IMPLEMENTATION: rmw_fastrtps_cpp
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Stub gate (replaced in Phase 2)
+      - name: Install build tooling
         run: |
-          echo "OtoNav-CI stub check — required status check is live."
-          echo "Phase 2 wires: pre-commit -> colcon build -> colcon test -> headless SIL."
-          echo "ref=${GITHUB_REF} event=${GITHUB_EVENT_NAME} sha=${GITHUB_SHA}"
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            git build-essential cmake wget ca-certificates ccache \
+            python3-colcon-common-extensions python3-rosdep \
+            libgl1 libglew-dev
+          rm -rf /var/lib/apt/lists/*
+
+      - uses: actions/checkout@v4
+
+      - name: Cache MuJoCo SDK
+        id: cache-mujoco
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.MUJOCO_DIR }}
+          key: mujoco-${{ env.MUJOCO_VERSION }}-linux-x86_64
+
+      - name: Fetch MuJoCo (on cache miss)
+        if: steps.cache-mujoco.outputs.cache-hit != 'true'
+        run: |
+          wget -qO /tmp/mujoco.tgz \
+            "https://github.com/google-deepmind/mujoco/releases/download/${MUJOCO_VERSION}/mujoco-${MUJOCO_VERSION}-linux-x86_64.tar.gz"
+          tar -xzf /tmp/mujoco.tgz -C /opt && rm /tmp/mujoco.tgz
+
+      - name: Register MuJoCo with the linker
+        run: |
+          ln -sf "${MUJOCO_DIR}/lib/libmujoco.so.${MUJOCO_VERSION}" "${MUJOCO_DIR}/lib/libmujoco.so"
+          echo "${MUJOCO_DIR}/lib" > /etc/ld.so.conf.d/mujoco.conf
+          ldconfig
+
+      - name: Cache ccache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ccache-humble-${{ github.sha }}
+          restore-keys: ccache-humble-
+
+      - name: Install ROS dependencies (rosdep)
+        run: |
+          if [ ! -f /etc/ros/rosdep/sources.list.d/20-default.list ]; then rosdep init; fi
+          rosdep update
+          rosdep install --from-paths . --ignore-src -y
+
+      - name: Build (Release, ccache)
+        shell: bash
+        run: |
+          source /opt/ros/humble/setup.bash
+          colcon build --merge-install \
+            --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          ccache --show-stats || true
+
+      - name: Test (ament lint + gtest + headless SIL)
+        shell: bash
+        run: |
+          source /opt/ros/humble/setup.bash
+          source install/setup.bash
+          colcon test --merge-install --event-handlers console_cohesion+
+          colcon test-result --verbose
+
+      - name: Upload JUnit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-test-results
+          path: build/*/test_results/**/*.xml
+          if-no-files-found: warn

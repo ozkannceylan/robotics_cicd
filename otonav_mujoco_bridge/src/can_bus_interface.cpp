@@ -4,15 +4,12 @@
 
 #include <stdexcept>
 
-namespace otonav_mujoco_bridge
-{
+namespace otonav_mujoco_bridge {
 
-namespace
-{
-[[noreturn]] void not_implemented()
-{
+namespace {
+[[noreturn]] void not_implemented() {
   throw std::logic_error(
-    "CanBusInterface is a stub (ADR-4): wire a real CAN driver here to run on hardware.");
+      "CanBusInterface is a stub (ADR-4): wire a real CAN driver here to run on hardware.");
 }
 }  // namespace
 
