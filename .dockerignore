@@ -1,0 +1,14 @@
+# Keep the build context small and deterministic.
+.git
+build/
+install/
+log/
+.colcon/
+**/__pycache__/
+*.md
+architecture.md
+project_plan.md
+todo.md
+.github/
+.pre-commit-config.yaml
+.clang-format

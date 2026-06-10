@@ -1,0 +1,11 @@
+otonav_bridge:
+  ros__parameters:
+    backend: mujoco
+    wheel_radius: 0.05
+    track_width: 0.30
+    publish_rate: 100.0
+    lidar_beams: 13
+    odom_frame: odom
+    base_frame: base_link
+    imu_frame: imu_link
+    laser_frame: laser_link

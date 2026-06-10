@@ -8,21 +8,22 @@ Work top to bottom. Each checkbox = one PR where feasible. Phases mirror `projec
 - [x] Add `CODEOWNERS` (own the critical paths: `/otonav_mujoco_bridge/`, `/.github/`)
 - [x] Add issue templates (bug, task)
 - [x] Enable branch protection on `main`: require PR, require status checks, no force-push
-- [~] Enable native Merge Queue on `main` — **blocked**: GitHub native merge queue is unavailable for private repos on a personal account (needs Team/Enterprise, or make the repo public). Fallback in place: branch protection ruleset requires PRs + the `lint-build-test` status check and blocks direct/force pushes, giving the same gate minus the auto re-test against latest `main`. Re-enable when the repo goes public or moves to an org.
+- [~] Enable native Merge Queue on `main` — repo is now **public**, but the rulesets REST API rejects the `merge_queue` rule (HTTP 422). Enable via the web UI: Settings → Rules → `main-protection` → "Require merge queue". Until then the branch-protection ruleset (PR required + `lint-build-test` check + no direct/force push) is the gate.
 - [x] Add `pre-commit` config: clang-format, trailing-whitespace, yaml check; document install in README
 - [x] Add stub CI workflow (checkout + echo) so the required check exists from day one
 - [x] Verify: open a trivial PR → template appears → stub check runs → merges via queue
 
 ## Phase 1 — Minimal Sim Bridge
-- [ ] `otonav_description`: MJCF diff-drive model (chassis, 2 actuated wheels w/ velocity actuators, caster, lidar site, IMU site); validate with `simulate` viewer manually
-- [ ] `otonav_mujoco_bridge` package skeleton (C++, ament_cmake), MuJoCo found via CMake (path from env/ARG)
-- [ ] `RobotHardwareInterface` abstract class + `MujocoInterface` implementation + `CanBusInterface` stub
-- [ ] Bridge node: mj_step loop, publishes `/clock` (sim time authority)
-- [ ] Subscribe `/cmd_vel` → diff-drive inverse kinematics → `mjData->ctrl`
-- [ ] Publish `/odom` (integrate from wheel states), `/imu`, `/scan` from MuJoCo sensordata
-- [ ] Viewer behind `gui` launch arg; confirm `gui:=false` runs with no display
-- [ ] `otonav_bringup`: `sim.launch.py` with `gui` + `use_sim_time` args
-- [ ] Smoke check: teleop_twist_keyboard drives the robot in viewer
+- [x] `otonav_description`: MJCF diff-drive model (chassis, 2 actuated wheels w/ velocity actuators, caster, lidar fan, IMU site); validated it compiles and drives via `mj_step`
+- [x] `otonav_mujoco_bridge` package skeleton (C++, ament_cmake), MuJoCo found via CMake (`MUJOCO_DIR` from Docker ARG/env)
+- [x] `RobotHardwareInterface` abstract class + `MujocoInterface` implementation + `CanBusInterface` stub
+- [x] Bridge node: mj_step loop, publishes `/clock` (sim time authority)
+- [x] Subscribe `/cmd_vel` → diff-drive inverse kinematics (`otonav_control`) → `mjData->ctrl`
+- [x] Publish `/odom` (integrate from wheel states), `/imu`, `/scan` from MuJoCo sensordata
+- [~] Viewer behind `gui` launch arg; `gui:=false` runs headless. **Headless validated in Docker; in-process viewer is compiled out (no GLFW/display in CI)** — `gui:=true` logs a warning. Enable later via a `-DOTONAV_WITH_VIEWER=ON` build for local dev.
+- [x] `otonav_bringup`: `sim.launch.py` with `gui` + `use_sim_time` args
+- [~] Smoke check: drives via `/cmd_vel`. Validated headless in Docker by asserting `/odom` publishes (teleop-in-viewer deferred with the viewer above).
+- Note: Phase 1 is built & validated inside the `docker/` Humble+MuJoCo image (host runs ROS 2 Jazzy, not Humble). This pulls the Phase 2 Dockerfile forward as the build harness; CI wiring (ccache, SIL, lint-all) remains Phase 2.
 
 ## Phase 2 — CI Pipeline
 - [ ] `docker/Dockerfile`: builder stage (toolchain + MuJoCo SDK + colcon build) → runner stage (ros-core + runtime libs + install tree)
