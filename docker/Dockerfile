@@ -30,6 +30,7 @@ RUN wget -qO /tmp/mujoco.tgz \
 WORKDIR /ws
 COPY otonav_description   src/otonav_description
 COPY otonav_control       src/otonav_control
+COPY otonav_nav           src/otonav_nav
 COPY otonav_mujoco_bridge src/otonav_mujoco_bridge
 COPY otonav_bringup       src/otonav_bringup
 
