@@ -1,6 +1,8 @@
 # OtoNav-CI
 
 [![CI](https://github.com/ozkannceylan/robotics_cicd/actions/workflows/ci.yml/badge.svg)](https://github.com/ozkannceylan/robotics_cicd/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/ozkannceylan/robotics_cicd?sort=semver)](https://github.com/ozkannceylan/robotics_cicd/releases)
+[![GHCR image](https://img.shields.io/badge/ghcr.io-runtime%20image-blue?logo=docker)](https://github.com/ozkannceylan/robotics_cicd/pkgs/container/robotics_cicd)
 
 End-to-end **ROS 2 Humble + MuJoCo** Software-in-the-Loop (SIL) **CI/CD platform**.
 A deliberately simple differential-drive robot wrapped in a production-grade pipeline:
@@ -57,6 +59,17 @@ If loopback discovery ever fails on a runner, fall back to the documented profil
 ```bash
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 export FASTRTPS_DEFAULT_PROFILES_FILE=$PWD/config/fastdds_ci_profile.xml
+```
+
+## Releases
+
+Pushing a semver tag (`vX.Y.Z`) builds the slim runner image and pushes it to GHCR
+(`.github/workflows/release.yml`). See [`CHANGELOG.md`](CHANGELOG.md).
+
+```bash
+docker pull ghcr.io/ozkannceylan/robotics_cicd:latest
+docker run --rm ghcr.io/ozkannceylan/robotics_cicd:latest \
+  ros2 launch otonav_bringup sim.launch.py gui:=false
 ```
 
 ## License

@@ -45,10 +45,10 @@ Work top to bottom. Each checkbox = one PR where feasible. Phases mirror `projec
 - [x] Verify artifact path: break controller gain in a branch, download the failure bag from the run, revert
 
 ## Phase 4 — Release Engineering
-- [ ] CHANGELOG.md (keep-a-changelog format), v0.1.0 entry
-- [ ] Tag `v0.1.0`, cut `release/v0.1` branch
-- [ ] Release workflow: on tag push, build runner image, push to GHCR with semver + sha tags
-- [ ] README badges: CI status, latest release
+- [x] CHANGELOG.md (keep-a-changelog format), v0.1.0 entry
+- [x] Tag `v0.1.0`, cut `release/v0.1` branch
+- [x] Release workflow: on tag push, build runner image, push to GHCR with semver + sha tags
+- [x] README badges: CI status, latest release, GHCR image
 
 ## Phase 5 — Interview Drill
 - [ ] Rehearse 3-minute repo tour: PR → checks → queue → tag → GHCR image → failure-bag artifact
