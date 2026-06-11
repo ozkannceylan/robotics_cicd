@@ -6,6 +6,14 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-06-11
+
+### Fixed
+- Release image build: the multi-stage `Dockerfile` COPY list predated
+  `otonav_nav` (Phase 3), so the `v0.1.0` tag build failed at rosdep. Added the
+  missing package COPY. `v0.1.0` shipped no image; `v0.1.1` is the first
+  published runner image.
+
 ## [0.1.0] - 2026-06-11
 
 First end-to-end release: a deliberately simple differential-drive robot inside a
@@ -35,5 +43,6 @@ production-grade ROS 2 Humble + MuJoCo SIL CI/CD pipeline.
 - **Containers** — multi-stage `docker/Dockerfile` (builder → slim runner) with a
   correct sourced entrypoint; MuJoCo version pinned in one place.
 
-[Unreleased]: https://github.com/ozkannceylan/robotics_cicd/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/ozkannceylan/robotics_cicd/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/ozkannceylan/robotics_cicd/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/ozkannceylan/robotics_cicd/releases/tag/v0.1.0
