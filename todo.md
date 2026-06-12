@@ -8,7 +8,7 @@ Work top to bottom. Each checkbox = one PR where feasible. Phases mirror `projec
 - [x] Add `CODEOWNERS` (own the critical paths: `/otonav_mujoco_bridge/`, `/.github/`)
 - [x] Add issue templates (bug, task)
 - [x] Enable branch protection on `main`: require PR, require status checks, no force-push
-- [~] Enable native Merge Queue on `main` — repo is now **public**, but the rulesets REST API rejects the `merge_queue` rule (HTTP 422). Enable via the web UI: Settings → Rules → `main-protection` → "Require merge queue". Until then the branch-protection ruleset (PR required + `lint-build-test` check + no direct/force push) is the gate.
+- [x] Enable native Merge Queue on `main` — **resolved by transferring the repo to the `ozkanceylan-dev` organization**: the earlier rulesets-API 422 was an account-type limitation (merge queue needs an org). Queue active on the `main-protection` ruleset: squash merge, ALLGREEN grouping, min 1 entry. The API now accepts the `merge_queue` rule too (method set to SQUASH to keep the linear history convention).
 - [x] Add `pre-commit` config: clang-format, trailing-whitespace, yaml check; document install in README
 - [x] Add stub CI workflow (checkout + echo) so the required check exists from day one
 - [x] Verify: open a trivial PR → template appears → stub check runs → merges via queue

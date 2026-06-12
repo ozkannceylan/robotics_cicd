@@ -6,6 +6,18 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-06-12
+
+### Changed
+- Repository transferred to the `ozkanceylan-dev` organization and the **native
+  GitHub Merge Queue enabled** on `main` (squash, ALLGREEN grouping). The earlier
+  rulesets-API rejection was an account-type limitation: `merge_queue` is accepted
+  now that the repo lives in an organization (ADR-6 fully realized).
+- Runtime images now publish under `ghcr.io/ozkanceylan-dev/robotics_cicd`
+  (container packages do not transfer with a repository; `0.1.1` remains in the
+  old personal namespace, `0.1.2` is the first image in the org namespace).
+- README badges and CHANGELOG links updated to the new repository path.
+
 ## [0.1.1] - 2026-06-11
 
 ### Fixed
@@ -43,6 +55,7 @@ production-grade ROS 2 Humble + MuJoCo SIL CI/CD pipeline.
 - **Containers** — multi-stage `docker/Dockerfile` (builder → slim runner) with a
   correct sourced entrypoint; MuJoCo version pinned in one place.
 
-[Unreleased]: https://github.com/ozkannceylan/robotics_cicd/compare/v0.1.1...HEAD
-[0.1.1]: https://github.com/ozkannceylan/robotics_cicd/compare/v0.1.0...v0.1.1
-[0.1.0]: https://github.com/ozkannceylan/robotics_cicd/releases/tag/v0.1.0
+[Unreleased]: https://github.com/ozkanceylan-dev/robotics_cicd/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/ozkanceylan-dev/robotics_cicd/compare/v0.1.1...v0.1.2
+[0.1.1]: https://github.com/ozkanceylan-dev/robotics_cicd/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/ozkanceylan-dev/robotics_cicd/releases/tag/v0.1.0

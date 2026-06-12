@@ -1,8 +1,8 @@
 # OtoNav-CI
 
-[![CI](https://github.com/ozkannceylan/robotics_cicd/actions/workflows/ci.yml/badge.svg)](https://github.com/ozkannceylan/robotics_cicd/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/ozkannceylan/robotics_cicd?sort=semver)](https://github.com/ozkannceylan/robotics_cicd/releases)
-[![GHCR image](https://img.shields.io/badge/ghcr.io-runtime%20image-blue?logo=docker)](https://github.com/ozkannceylan/robotics_cicd/pkgs/container/robotics_cicd)
+[![CI](https://github.com/ozkanceylan-dev/robotics_cicd/actions/workflows/ci.yml/badge.svg)](https://github.com/ozkanceylan-dev/robotics_cicd/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/ozkanceylan-dev/robotics_cicd?sort=semver)](https://github.com/ozkanceylan-dev/robotics_cicd/releases)
+[![GHCR image](https://img.shields.io/badge/ghcr.io-runtime%20image-blue?logo=docker)](https://github.com/ozkanceylan-dev/robotics_cicd/pkgs/container/robotics_cicd)
 
 End-to-end **ROS 2 Humble + MuJoCo** Software-in-the-Loop (SIL) **CI/CD platform**.
 A deliberately simple differential-drive robot wrapped in a production-grade pipeline:
@@ -67,8 +67,8 @@ Pushing a semver tag (`vX.Y.Z`) builds the slim runner image and pushes it to GH
 (`.github/workflows/release.yml`). See [`CHANGELOG.md`](CHANGELOG.md).
 
 ```bash
-docker pull ghcr.io/ozkannceylan/robotics_cicd:latest
-docker run --rm ghcr.io/ozkannceylan/robotics_cicd:latest \
+docker pull ghcr.io/ozkanceylan-dev/robotics_cicd:latest
+docker run --rm ghcr.io/ozkanceylan-dev/robotics_cicd:latest \
   ros2 launch otonav_bringup sim.launch.py gui:=false
 ```
 
