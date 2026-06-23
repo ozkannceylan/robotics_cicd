@@ -50,8 +50,8 @@ Work top to bottom. Each checkbox = one PR where feasible. Phases mirror `projec
 - [x] Release workflow: on tag push, build runner image, push to GHCR with semver + sha tags
 - [x] README badges: CI status, latest release, GHCR image
 
-## Phase 5 — Interview Drill
-- [ ] Rehearse 3-minute repo tour: PR → checks → queue → tag → GHCR image → failure-bag artifact
-- [ ] Rehearse Q&A anchors in architecture.md §7 out loud (EN)
-- [ ] Prepare one open PR sitting in the merge queue for live demo
-- [ ] Write 5 talking-point bullets mapping repo features to job-description lines (PR lifecycle, merge queues, repo hygiene, Docker/K8s, middleware)
+## Phase 5 — Project Review & Documentation
+- [ ] Ensure the repo tour is clear: PR → checks → queue → tag → GHCR image → failure-bag artifact
+- [ ] Review Q&A concepts in architecture.md §7
+- [ ] Prepare one open PR sitting in the merge queue for demonstration
+- [ ] Write 5 talking-point bullets highlighting repo features (PR lifecycle, merge queues, repo hygiene, Docker/K8s, middleware)

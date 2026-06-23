@@ -107,16 +107,16 @@ Control input u = [v, ω]. Wheel angular velocities (r = wheel radius, L = track
 
 Odometry integration (world frame): ẋ = v·cosθ, ẏ = v·sinθ, θ̇ = ω, integrated at the bridge step rate on sim time.
 
-## 7. Interview Q&A Anchors
+## 7. Key Architecture Concepts
 
-**"How do you guarantee sim-validated code behaves on real hardware?"**
+**"How do we guarantee sim-validated code behaves on real hardware?"**
 Reality-gap mitigation: (1) HAL boundary — only the hardware interface implementation swaps (ADR-4), the entire stack above is identical; (2) injected Gaussian noise models on sensors and actuation latency in sim; (3) identical containerized runtime on both targets — the image tested in CI is the image deployed.
 
-**"How do you fight flaky simulation tests in CI?"**
+**"How do we fight flaky simulation tests in CI?"**
 Sim time everywhere (ADR-2), conditional waits instead of sleeps, deterministic seeds in the physics scenario, localhost-only DDS to remove network nondeterminism (ADR-3), and rosbag-on-failure artifacts so a flake is debuggable instead of re-run-and-pray.
 
-**"How do you handle large test data (rosbags) in CI?"**
+**"How do we handle large test data (rosbags) in CI?"**
 Never in git. Reference bags live in versioned object storage (S3/GHCR artifacts); the pipeline pulls only what the scenario needs, runs, and cleans up. Git LFS only for small reference assets.
 
-**"What does the merge queue buy you over plain required checks?"**
+**"What does the merge queue buy over plain required checks?"**
 Required checks validate a PR against the main it branched from; the queue validates against the main it will actually land on, serially or in optimistic batches. It converts integration order into a tested property.

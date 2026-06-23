@@ -5,7 +5,7 @@ Operating manual for Claude Code working in this repository. Read `project_plan.
 > **Machine-wide standards** (settings, Obsidian vault / Second Brain integration, workflow orchestration, task management, core principles) live in the vault at `[VAULT_ROOT]/claude-code-files/BASE_CLAUDE.md`. Read it once per session; the project-specific rules below take precedence where they conflict.
 
 ## Project Context
-End-to-end ROS 2 Humble + MuJoCo SIL CI/CD platform, built in ~2 days as interview evidence for a Robotics Software Integration Engineer role. Priority order: **repo hygiene & CI infrastructure > sim bridge correctness > navigation sophistication.** When in doubt, simplify the robot, never the pipeline.
+End-to-end ROS 2 Humble + MuJoCo SIL CI/CD platform, built as a portfolio project demonstrating Robotics Software Integration capabilities. Priority order: **repo hygiene & CI infrastructure > sim bridge correctness > navigation sophistication.** When in doubt, simplify the robot, never the pipeline.
 
 ## Current State (read before assuming code exists)
 The repo is **pre-implementation**. Only `README.md`, `LICENSE`, `.gitignore`, and the four planning docs (`CLAUDE.md`, `architecture.md`, `project_plan.md`, `todo.md`) exist. **None of the `otonav_*` packages in `architecture.md §2` are written yet** — don't search for them, build them. Work the phases in `project_plan.md` / `todo.md` top-to-bottom; Phase 0 (repo hygiene) and Phase 2 (CI) are non-negotiable, everything else has cut lines.

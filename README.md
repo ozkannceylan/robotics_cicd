@@ -7,7 +7,7 @@
 End-to-end **ROS 2 Humble + MuJoCo** Software-in-the-Loop (SIL) **CI/CD platform**.
 A deliberately simple differential-drive robot wrapped in a production-grade pipeline:
 protected `main`, PR templates, required checks, native **merge queue**, and a versioned
-release image. Built as interview evidence for a Robotics Software Integration Engineer role.
+release image. Built as a portfolio project demonstrating best practices for a Robotics Software Integration engineering role.
 
 > Read [`project_plan.md`](project_plan.md) for phase scope, [`architecture.md`](architecture.md)
 > for design decisions (ADRs), [`todo.md`](todo.md) for live task state, and
