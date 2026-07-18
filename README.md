@@ -10,8 +10,7 @@ protected `main`, PR templates, required checks, native **merge queue**, and a v
 release image. Built as a portfolio project demonstrating best practices for a Robotics Software Integration engineering role.
 
 > Read [`project_plan.md`](project_plan.md) for phase scope, [`architecture.md`](architecture.md)
-> for design decisions (ADRs), [`todo.md`](todo.md) for live task state, and
-> [`CLAUDE.md`](CLAUDE.md) for the operating manual.
+> for design decisions (ADRs), and [`todo.md`](todo.md) for live task state.
 
 ## Status
 

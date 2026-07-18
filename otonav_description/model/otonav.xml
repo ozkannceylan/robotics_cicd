@@ -2,7 +2,7 @@
   OtoNav differential-drive robot — minimal physics model (Phase 1).
   Deliberately simple: chassis + 2 actuated wheels + frictionless caster,
   an IMU site and a 13-beam forward lidar fan. Physics correctness only;
-  no visual polish (CLAUDE.md "What NOT to Do").
+  no visual polish by design (ADR-1: physics is the contract, rendering is opt-in).
 
   Named entities the bridge maps by name (see mujoco_interface.cpp):
     actuators : left_wheel_act, right_wheel_act   (velocity, ctrl = rad/s)
