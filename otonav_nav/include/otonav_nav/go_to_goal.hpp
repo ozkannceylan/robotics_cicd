@@ -23,20 +23,16 @@ struct VelocityCommand {
   bool reached{false};
 };
 
-/// Wrap an angle to [-pi, pi].
-inline double wrap_angle(double a) {
-  while (a > M_PI) {
-    a -= 2.0 * M_PI;
-  }
-  while (a < -M_PI) {
-    a += 2.0 * M_PI;
-  }
-  return a;
-}
+/// Wrap an angle to [-pi, pi]. Non-finite input yields NaN (never loops).
+inline double wrap_angle(double a) { return std::remainder(a, 2.0 * M_PI); }
 
 /// P-control toward a goal. dx,dy = goal minus robot in the world frame; yaw =
 /// robot heading. Turns toward the goal and only drives forward while facing it.
+/// Non-finite input commands a stop rather than propagating NaN to /cmd_vel.
 inline VelocityCommand go_to_goal(double dx, double dy, double yaw, const GoToGoalParams & p) {
+  if (!std::isfinite(dx) || !std::isfinite(dy) || !std::isfinite(yaw)) {
+    return VelocityCommand{0.0, 0.0, false};
+  }
   const double dist = std::hypot(dx, dy);
   if (dist < p.goal_tolerance) {
     return VelocityCommand{0.0, 0.0, true};

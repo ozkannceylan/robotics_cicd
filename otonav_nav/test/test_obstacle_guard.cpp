@@ -36,6 +36,10 @@ TEST(ObstacleGuard, IgnoresCloseBeamOutsideFrontSector) {
   EXPECT_FALSE(obstacle_ahead(r, kAngleMin, kInc, kFrontHalf, kStop));
 }
 
+TEST(ObstacleGuard, EmptyScanFailsSafe) {
+  EXPECT_TRUE(obstacle_ahead({}, kAngleMin, kInc, kFrontHalf, kStop));
+}
+
 TEST(ObstacleGuard, IgnoresNonPositiveAndNonFinite) {
   std::vector<float> r = all_clear();
   r[6] = -1.0F;  // no-hit sentinel

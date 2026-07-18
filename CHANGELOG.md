@@ -6,6 +6,19 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+- `wrap_angle` now uses `std::remainder`: the old while-loop never terminated on
+  non-finite input; `go_to_goal` also commands a stop instead of propagating a
+  non-finite pose into `/cmd_vel`.
+- `obstacle_ahead` fails safe on an empty scan (no data ⇒ blocked, not clear).
+- CI resolves `MUJOCO_VERSION` from `docker/Dockerfile` instead of duplicating
+  it, restoring the single source of truth (Hard Rule #6).
+- README status section no longer claims the `otonav_*` packages are unwritten.
+
+### Added
+- `/odom` publishes honest static pose/twist covariance (parameterized) instead
+  of an all-zero matrix that claimed perfect odometry.
+
 ## [0.1.2] - 2026-06-12
 
 ### Changed
