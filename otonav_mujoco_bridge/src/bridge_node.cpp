@@ -8,7 +8,9 @@
 // and /scan stamped with sim time. The driving timer is a wall timer so the
 // node never waits on the very clock it produces.
 #include <algorithm>
+#include <array>
 #include <cmath>
+#include <cstddef>
 #include <memory>
 #include <string>
 
@@ -62,6 +64,14 @@ class OtoNavBridge : public rclcpp::Node {
     imu_frame_ = declare_parameter<std::string>("imu_frame", "imu_link", describe("IMU frame."));
     laser_frame_ =
         declare_parameter<std::string>("laser_frame", "laser_link", describe("Lidar frame."));
+    pose_var_xy_ = declare_parameter<double>("odom_pose_variance_xy", 1e-3,
+                                             describe("Odometry x/y pose variance [m^2]."));
+    pose_var_yaw_ = declare_parameter<double>("odom_pose_variance_yaw", 1e-3,
+                                              describe("Odometry yaw pose variance [rad^2]."));
+    twist_var_v_ = declare_parameter<double>("odom_twist_variance_v", 1e-4,
+                                             describe("Odometry linear twist variance [(m/s)^2]."));
+    twist_var_w_ = declare_parameter<double>(
+        "odom_twist_variance_w", 1e-4, describe("Odometry angular twist variance [(rad/s)^2]."));
     const bool enable_viewer = declare_parameter<bool>(
         "enable_viewer", false,
         describe("Open the MuJoCo viewer (local dev only; headless build is a no-op)."));
@@ -159,6 +169,18 @@ class OtoNavBridge : public rclcpp::Node {
     msg.pose.pose.orientation.w = std::cos(theta_ / 2.0);
     msg.twist.twist.linear.x = t.v;
     msg.twist.twist.angular.z = t.w;
+    // Wheel odometry is dead-reckoned and drifts; an all-zero covariance would
+    // claim it is perfect. Publish honest static estimates so downstream fusion
+    // (e.g. an EKF) weighs it correctly. Unobserved DOF (z, roll, pitch) get a
+    // large variance per REP-105 planar convention.
+    constexpr double kBig = 1e6;
+    const std::array<double, 6> pose_var{pose_var_xy_, pose_var_xy_, kBig,
+                                         kBig,         kBig,         pose_var_yaw_};
+    const std::array<double, 6> twist_var{twist_var_v_, kBig, kBig, kBig, kBig, twist_var_w_};
+    for (std::size_t i = 0; i < 6; ++i) {
+      msg.pose.covariance[i * 6 + i] = pose_var[i];
+      msg.twist.covariance[i * 6 + i] = twist_var[i];
+    }
     odom_pub_->publish(msg);
   }
 
@@ -202,6 +224,10 @@ class OtoNavBridge : public rclcpp::Node {
   double publish_rate_{100.0};
   int steps_per_publish_{1};
   std::string odom_frame_, base_frame_, imu_frame_, laser_frame_;
+  double pose_var_xy_{1e-3};
+  double pose_var_yaw_{1e-3};
+  double twist_var_v_{1e-4};
+  double twist_var_w_{1e-4};
 
   std::unique_ptr<RobotHardwareInterface> hw_;
 

@@ -32,8 +32,6 @@ jobs:
     container: ros:humble-ros-base
     timeout-minutes: 10
     env:
-      MUJOCO_VERSION: "3.3.7"
-      MUJOCO_DIR: /opt/mujoco-3.3.7
       CCACHE_DIR: ${{ github.workspace }}/.ccache
       ROS_LOCALHOST_ONLY: "1"
       RMW_IMPLEMENTATION: rmw_fastrtps_cpp
@@ -48,6 +46,13 @@ jobs:
           rm -rf /var/lib/apt/lists/*
 
       - uses: actions/checkout@v4
+
+      - name: Resolve MuJoCo version from docker/Dockerfile (Hard Rule #6)
+        run: |
+          MUJOCO_VERSION="$(sed -n 's/^ARG MUJOCO_VERSION=//p' docker/Dockerfile)"
+          test -n "${MUJOCO_VERSION}"
+          echo "MUJOCO_VERSION=${MUJOCO_VERSION}" >> "${GITHUB_ENV}"
+          echo "MUJOCO_DIR=/opt/mujoco-${MUJOCO_VERSION}" >> "${GITHUB_ENV}"
 
       - name: Cache MuJoCo SDK
         id: cache-mujoco

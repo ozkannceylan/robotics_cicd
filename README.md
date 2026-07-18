@@ -15,8 +15,10 @@ release image. Built as a portfolio project demonstrating best practices for a R
 
 ## Status
 
-Phase 0 (repo & CI hygiene scaffold) is in place. Robot packages (`otonav_*`) are not
-written yet — work proceeds phase-by-phase per `project_plan.md`.
+Phases 0–4 are complete: repo & CI hygiene, the MuJoCo bridge (`otonav_mujoco_bridge`),
+diff-drive control (`otonav_control`), go-to-goal navigation (`otonav_nav`), headless
+SIL launch tests (`otonav_bringup`), and the tagged GHCR release pipeline. See
+[`CHANGELOG.md`](CHANGELOG.md) for release history.
 
 ## Contributing flow
 
@@ -37,7 +39,7 @@ gh pr create --fill
 
 Conventional commit prefixes: `feat:`, `fix:`, `ci:`, `docs:`, `test:`, `refactor:`.
 
-## Build & test (once packages exist)
+## Build & test
 
 ```bash
 source /opt/ros/humble/setup.bash

@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #include <cmath>
+#include <limits>
 
 #include "otonav_nav/go_to_goal.hpp"
 
@@ -50,9 +51,33 @@ TEST(GoToGoal, ClampsToLimits) {
 }
 
 TEST(GoToGoal, WrapAngleRange) {
-  EXPECT_NEAR(wrap_angle(3.0 * M_PI), M_PI, 1e-9);
-  EXPECT_NEAR(wrap_angle(-3.0 * M_PI), -M_PI, 1e-9);
+  // +/-pi are the same heading; only require the wrapped magnitude and interval.
+  EXPECT_NEAR(std::abs(wrap_angle(3.0 * M_PI)), M_PI, 1e-9);
+  EXPECT_NEAR(std::abs(wrap_angle(-3.0 * M_PI)), M_PI, 1e-9);
   EXPECT_NEAR(wrap_angle(0.5), 0.5, 1e-9);
+  EXPECT_NEAR(wrap_angle(2.0 * M_PI), 0.0, 1e-9);
+  for (double a = -20.0; a <= 20.0; a += 0.37) {
+    EXPECT_LE(std::abs(wrap_angle(a)), M_PI + 1e-9);
+  }
+}
+
+TEST(GoToGoal, WrapAngleNonFiniteDoesNotHang) {
+  const double kNan = std::numeric_limits<double>::quiet_NaN();
+  const double kInf = std::numeric_limits<double>::infinity();
+  EXPECT_TRUE(std::isnan(wrap_angle(kNan)));
+  EXPECT_TRUE(std::isnan(wrap_angle(kInf)));
+  EXPECT_TRUE(std::isnan(wrap_angle(-kInf)));
+}
+
+TEST(GoToGoal, NonFinitePoseCommandsStop) {
+  const double kNan = std::numeric_limits<double>::quiet_NaN();
+  for (const VelocityCommand c :
+       {go_to_goal(kNan, 0.0, 0.0, kParams), go_to_goal(1.0, kNan, 0.0, kParams),
+        go_to_goal(1.0, 0.0, kNan, kParams)}) {
+    EXPECT_FALSE(c.reached);
+    EXPECT_NEAR(c.v, 0.0, 1e-9);
+    EXPECT_NEAR(c.w, 0.0, 1e-9);
+  }
 }
 
 int main(int argc, char ** argv) {

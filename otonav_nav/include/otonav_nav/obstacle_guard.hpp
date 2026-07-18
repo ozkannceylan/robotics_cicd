@@ -12,8 +12,13 @@ namespace otonav_nav {
 
 /// True if any beam within +/- front_half_angle of straight ahead reports a
 /// finite range below stop_distance. Beam i points at angle_min + i*increment.
+/// An empty scan reports blocked: no range data is no evidence of clearance,
+/// and a guard must fail safe, not fail open.
 inline bool obstacle_ahead(const std::vector<float> & ranges, double angle_min,
                            double angle_increment, double front_half_angle, double stop_distance) {
+  if (ranges.empty()) {
+    return true;
+  }
   for (std::size_t i = 0; i < ranges.size(); ++i) {
     const double angle = angle_min + static_cast<double>(i) * angle_increment;
     if (std::abs(angle) > front_half_angle) {
